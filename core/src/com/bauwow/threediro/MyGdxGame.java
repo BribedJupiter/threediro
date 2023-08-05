@@ -1,5 +1,6 @@
 package com.bauwow.threediro;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -23,11 +24,16 @@ public class MyGdxGame implements ApplicationListener {
 	public PerspectiveCamera cam;
 	public CameraInputController camController;
 	public ModelBatch modelBatch;
-	public Model model;
-	public ModelInstance instance;
+
+	public Model box;
+	public ModelInstance box_instance;
+	public Model plane;
+	public ModelInstance plane_instance;
 
 	@Override
 	public void create () {
+		Gdx.app.setLogLevel(Application.LOG_DEBUG);
+
 		modelBatch = new ModelBatch();
 
 		environment = new Environment();
@@ -46,11 +52,15 @@ public class MyGdxGame implements ApplicationListener {
 
 		ModelBuilder modelBuilder = new ModelBuilder();
 		// Model only keeps details about the model
-		model = modelBuilder.createBox(5f, 5f, 5f,
+		box = modelBuilder.createBox(5f, 5f, 5f,
 			new Material(ColorAttribute.createDiffuse(Color.GOLD)),
 			Usage.Position | Usage.Normal);
 		// Instance keeps track of world information about the model
-		instance = new ModelInstance(model);
+		box_instance = new ModelInstance(box);
+		plane = modelBuilder.createLineGrid(10, 10, 10, 10,
+				new Material(ColorAttribute.createDiffuse(Color.RED)),
+				Usage.Position | Usage.Normal);
+		plane_instance = new ModelInstance(plane);
 	}
 
 	@Override
@@ -66,7 +76,8 @@ public class MyGdxGame implements ApplicationListener {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
 		modelBatch.begin(cam);
-		modelBatch.render(instance, environment);
+		modelBatch.render(box_instance, environment);
+		modelBatch.render(plane_instance, environment);
 		modelBatch.end();
 	}
 
@@ -83,6 +94,7 @@ public class MyGdxGame implements ApplicationListener {
 	@Override
 	public void dispose () {
 		modelBatch.dispose();
-		model.dispose();
+		box.dispose();
+		plane.dispose();
 	}
 }
