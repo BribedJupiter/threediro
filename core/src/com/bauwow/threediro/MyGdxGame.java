@@ -1,7 +1,6 @@
 package com.bauwow.threediro;
 
 import com.badlogic.gdx.Application;
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -16,8 +15,9 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 
 public class MyGdxGame implements ApplicationListener {
 	public Environment environment;
@@ -29,6 +29,8 @@ public class MyGdxGame implements ApplicationListener {
 	public ModelInstance box_instance;
 	public Model plane;
 	public ModelInstance plane_instance;
+	public Model arrow;
+	public ModelInstance arrow_instance;
 
 	@Override
 	public void create () {
@@ -61,6 +63,10 @@ public class MyGdxGame implements ApplicationListener {
 				new Material(ColorAttribute.createDiffuse(Color.RED)),
 				Usage.Position | Usage.Normal);
 		plane_instance = new ModelInstance(plane);
+		arrow = modelBuilder.createArrow(new Vector3(0, 0, 0), new Vector3(30, 30, 30),
+						new Material(ColorAttribute.createDiffuse(Color.BLUE)),
+				Usage.Position | Usage.Normal);
+		arrow_instance = new ModelInstance(arrow);
 	}
 
 	@Override
@@ -75,9 +81,12 @@ public class MyGdxGame implements ApplicationListener {
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+		arrow_spin(arrow_instance);
+
 		modelBatch.begin(cam);
 		modelBatch.render(box_instance, environment);
 		modelBatch.render(plane_instance, environment);
+		modelBatch.render(arrow_instance, environment);
 		modelBatch.end();
 	}
 
@@ -96,5 +105,10 @@ public class MyGdxGame implements ApplicationListener {
 		modelBatch.dispose();
 		box.dispose();
 		plane.dispose();
+		arrow.dispose();
+	}
+
+	private void arrow_spin (ModelInstance arrow) {
+		arrow.transform.rotate(Vector3.Y, 10);
 	}
 }
